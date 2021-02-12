@@ -9,5 +9,6 @@ export default props =>
                 <FontAwesomeIcon icon={faImage} color='#3B5998' size='10x'/>
             </label>
             <input type='file' id='single' onChange={props.onChange}/>
+            <img src='' height='200' alt='Image preview...'></img>
         </div>
     </div>

@@ -29,23 +29,21 @@ const App = () => {
     setModel(recognizer)
   }
 
-  const onChange = e => {
-    const files = Array.from(e.target.files)
-    setUploading(true);
+  function previewFile() {
+    const preview = document.querySelector('img');
+    const file = document.querySelector('input[type=file]').files[0];
+    const reader = new FileReader();
+  
+    reader.addEventListener("load", function () {
+      // convert image file to base64 string
+      preview.src = reader.result;
+    }, false);
+  
+    if (file) {
+      reader.readAsDataURL(file);
+    }
 
-    //TODO: transform file to image
-
-    console.log(files)
-    
-    const values = Object.values(files)
-
-    console.log(values)
-    values.forEach(image =>{
-      console.log(image.path)
-      setUploading(false)
-      setImage(image)
-      recognizeImage()
-    })
+    setPrediction("")
   }
 
   const removeImage = () => {
@@ -56,10 +54,12 @@ const App = () => {
 
   // 3. Listen for Actions
   const recognizeImage = async () => {
+    const image = document.querySelector('img');
     if(image!=null){
       console.log("Listenning for image");
       const prediction = await model.classify(image);
-      setPrediction(prediction)
+      console.log(prediction)
+      setPrediction("This is a "+ prediction[0].className +" and I am "+ prediction[0].probability*100 + "% sure.")
     }
   }
 
@@ -68,22 +68,24 @@ const App = () => {
       return <Spinner />
     }
     else if (image === null){
-      return <Buttons onChange={onChange} />
+      return <Buttons onChange={previewFile} />
     }
     else{
       return <Images image={image} removeImage={removeImage}/>
     }
   }
 
+  const renderPrediction = () => {
+    return <div>{prediction}</div>
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-   
         {content()}
         <div id='predlabel'>
           <label >
-            Prediction is : {prediction}
+            Prediction is : {renderPrediction()}
           </label>
         </div>
         <button onClick={recognizeImage}>Guess!</button>
